@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <title>සජීවී වෙබ් ප්‍රතිඵලය - Result</title>
+    <style>
+        /* Iframe එක සම්පූර්ණ තිරයට ගැලපෙන සේ සැකසීම */
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #ffffff; }
+        #render-frame { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    
+    <!-- කේතය ආරක්ෂිතව ධාවනය කිරීම සඳහා Sandbox Iframe එකක් යොදා ගැනීම -->
+    <iframe id="render-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+<script>
+    window.onload = function() {
+        let htmlContent = localStorage.getItem('proRenderHTML');
+        let frame = document.getElementById('render-frame');
+        
+        if (htmlContent) {
+            // innerHTML වෙනුවට srcdoc භාවිතය වඩාත් ආරක්ෂිත සහ කාර්යක්ෂම වේ
+            frame.srcdoc = htmlContent;
+        } else {
+            frame.srcdoc = "<html><body style='font-family:sans-serif; padding: 20px;'><h3>කේතයක් හමු නොවීය.</h3></body></html>";
+        }
+    };
+</script>
+</body>
+</html>

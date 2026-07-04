@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>සැකසුම් මණ්ඩලය - Smart Settings</title>
+    <style>
+        :root {
+            --primary: #4361ee; --primary-hover: #3a53d0; --success: #2ecc71; 
+            --success-hover: #27ae60; --danger: #e74c3c; --danger-hover: #c0392b; 
+            --warning: #f39c12; --warning-hover: #d68910; --bg-color: #f4f7fe; 
+            --card-bg: #ffffff; --text-dark: #2b3674; --text-muted: #a3aed1; --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); padding: 30px 15px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { font-size: 28px; color: var(--primary); margin-bottom: 10px; }
+        .header p { color: var(--text-muted); font-size: 15px; }
+        
+        /* අලුතින් එකතු කළ සෙවුම් තීරුවේ (Search Box) හැඩතල */
+        .search-container { margin-bottom: 25px; }
+        .search-input { width: 100%; padding: 14px 20px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; transition: all 0.3s; background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23a3aed1" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat right 20px center; outline: none; }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15); }
+
+        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: var(--text-dark); border-bottom: 2px solid var(--border); padding-bottom: 10px;}
+        .action-bar { display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; margin-bottom: 20px; }
+        
+        .btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn:active { transform: translateY(2px); }
+        .btn-io { background: var(--warning); color: white; flex: 1; min-width: 200px; }
+        .btn-io:hover { background: var(--warning-hover); }
+        .btn-add { background: rgba(67, 97, 238, 0.1); color: var(--primary); width: 100%; margin-top: 10px; border: 1px dashed var(--primary); box-shadow: none; }
+        .btn-add:hover { background: var(--primary); color: white; }
+        .btn-save { background: var(--primary); color: white; width: 100%; font-size: 16px; padding: 14px; }
+        .btn-save:hover { background: var(--primary-hover); box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3); }
+        .btn-reset { background: #95a5a6; color: white; }
+        .btn-reset:hover { background: #7f8c8d; }
+        .btn-del { background: rgba(231, 76, 60, 0.1); color: var(--danger); border-radius: 6px; padding: 8px 12px; box-shadow: none; }
+        .btn-del:hover { background: var(--danger); color: white; }
+        input[type="file"] { display: none; }
+
+        .dynamic-list { max-height: 280px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--primary) var(--bg-color); }
+        .dynamic-list::-webkit-scrollbar { width: 6px; }
+        .dynamic-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        .row-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; animation: fadeIn 0.4s ease; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid var(--border); transition: transform 0.2s; }
+        .row-item:hover { transform: scale(1.01); border-color: var(--primary); }
+        input[type="text"]:not(.search-input) { flex: 1; padding: 10px 15px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: monospace; transition: border 0.3s, box-shadow 0.3s; background: white; outline: none; }
+        input[type="text"]:not(.search-input):focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15); }
+        .arrow { color: var(--text-muted); font-weight: bold; }
+        .nav-link { display: block; text-align: center; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-weight: bold; transition: color 0.3s; }
+        .nav-link:hover { color: var(--primary); }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .toast.success { background-color: var(--success); }
+        .toast.error { background-color: var(--danger); }
+        .toast.info { background-color: var(--primary); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        @media (max-width: 600px) {
+            .row-item { flex-direction: column; align-items: stretch; gap: 8px; }
+            .arrow { text-align: center; transform: rotate(90deg); margin: -5px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>⚙️ සැකසුම් මණ්ඩලය</h2>
+        <p>ඔබගේ සිංහල HTML වැඩබිමේ ටැග් සහ ගුණාංග කළමනාකරණය කරන්න</p>
+    </div>
+
+    <!-- නව සෙවුම් තීරුව -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 සිංහල හෝ ඉංග්‍රීසි වචනයෙන් ටැග් සොයන්න..." onkeyup="filterSettings()">
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-io" onclick="downloadConfigFile()">💾 සැකසුම් බාගන්න</button>
+        <label class="btn btn-io" for="upload-file" style="margin:0;">📂 ෆයිල් එකක් ඇතුළත් කරන්න</label>
+        <input type="file" id="upload-file" accept=".txt, .json" onchange="uploadConfigFile(this)">
+        <button class="btn btn-reset" onclick="resetToDefaults()">🔄 පෙරනිමි (Reset)</button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🏷️ සම්පූර්ණ ටැග් ලැයිස්තුව (Tags)</div>
+        <div class="dynamic-list" id="tags-container"></div>
+        <button class="btn btn-add" onclick="addTagRow('', '')">➕ අලුත් ටැග් එකක් එකතු කරන්න</button>
+    </div>
+    
+    <div class="card">
+        <div class="card-title">🛠️ ගුණාංග ලැයිස්තුව (Attributes)</div>
+        <div class="dynamic-list" id="attrs-container"></div>
+        <button class="btn btn-add" onclick="addAttrRow('', '')">➕ අලුත් ගුණාංගයක් එකතු කරන්න</button>
+    </div>
+
+    <button class="btn btn-save" onclick="applyToWorkspace()">💻 මෙම සැකසුම් පද්ධතියට සුරකින්න (Save)</button>
+    <a class="nav-link" href="index.html">⬅️ ප්‍රධාන කේතන පිටුවට ආපසු යන්න</a>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    // settings.html හි JavaScript කොටසේ defaultTags සහ defaultAttrs පහත පරිදි වෙනස් කරන්න
+
+const defaultTags = [
+    {u:'වෙබ්පිටුව.', h:'<html>'}, {u:'වෙබ්පිටුව අවසන්.', h:'</html>'},
+    {u:'හිස.', h:'<head>'}, {u:'හිස අවසන්.', h:'</head>'},
+    {u:'මාතෘකාව.', h:'<title>'}, {u:'මාතෘකාව අවසන්.', h:'</title>'},
+    {u:'ශරීරය.', h:'<body>'}, {u:'ශරීරය අවසන්.', h:'</body>'},
+    {u:'මාතෘකාව1.', h:'<h1>'}, {u:'මාතෘකාව1 අවසන්.', h:'</h1>'},
+    {u:'ඡේදය.', h:'<p>'}, {u:'ඡේදය අවසන්.', h:'</p>'}
+];
+
+const defaultAttrs = [
+    {u:'ලිපිනය=', h:'href='}, {u:'හැඩය=', h:'style='}
+];
+    window.onload = function() {
+        loadSettings();
+    };
+
+    function loadSettings(tags = null, attrs = null) {
+        document.getElementById('tags-container').innerHTML = "";
+        document.getElementById('attrs-container').innerHTML = "";
+
+        let savedTags = tags || defaultTags;
+        let savedAttrs = attrs || defaultAttrs;
+
+        if(!tags || !attrs) {
+            try {
+                savedTags = JSON.parse(localStorage.getItem('proTags')) || defaultTags;
+                savedAttrs = JSON.parse(localStorage.getItem('proAttrs')) || defaultAttrs;
+            } catch(e) {
+                console.warn("Storage empty or corrupted.");
+            }
+        }
+        
+        savedTags.forEach(t => addTagRow(t.u, t.h));
+        savedAttrs.forEach(a => addAttrRow(a.u, a.h));
+    }
+
+    function addTagRow(u, h) {
+        const div = document.createElement('div');
+        div.className = 'row-item';
+        div.innerHTML = `
+            <input type="text" placeholder="උදා: <මාතෘකාව1>" value="${u}" class="user-tag"> 
+            <span class="arrow">➔</span> 
+            <input type="text" placeholder="උදා: <h1>" value="${h}" class="html-tag"> 
+            <button class="btn btn-del" onclick="removeRow(this)" title="මකන්න">🗑️</button>
+        `;
+        document.getElementById('tags-container').appendChild(div);
+    }
+
+    function addAttrRow(u, h) {
+        const div = document.createElement('div');
+        div.className = 'row-item';
+        div.innerHTML = `
+            <input type="text" placeholder="උදා: හැඩය=" value="${u}" class="user-attr"> 
+            <span class="arrow">➔</span> 
+            <input type="text" placeholder="උදා: style=" value="${h}" class="html-attr"> 
+            <button class="btn btn-del" onclick="removeRow(this)" title="මකන්න">🗑️</button>
+        `;
+        document.getElementById('attrs-container').appendChild(div);
+    }
+
+    function removeRow(btn) {
+        const row = btn.parentElement;
+        row.style.opacity = '0';
+        row.style.transform = 'scale(0.9)';
+        setTimeout(() => row.remove(), 200);
+    }
+
+    // සෙවුම් තීරුවට අදාළ ශ්‍රිතය (Search Filter Function)
+    function filterSettings() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let rows = document.querySelectorAll('.row-item');
+        
+        rows.forEach(row => {
+            let inputs = row.querySelectorAll('input[type="text"]');
+            let sinText = inputs[0].value.toLowerCase();
+            let engText = inputs[1].value.toLowerCase();
+            
+            // සිංහල හෝ ඉංග්‍රීසි යන දෙකෙන් එකක හෝ සෙවුම් පදය තිබේ නම් පෙන්වන්න
+            if(sinText.includes(input) || engText.includes(input)) {
+                row.style.display = "flex";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+   function getCurrentData() {
+        let tags = [], attrs = [];
+        document.querySelectorAll('#tags-container .row-item').forEach(row => {
+            let u = row.querySelectorAll('input')[0].value.trim();
+            let h = row.querySelectorAll('input')[1].value.trim();
+
+            // < > බලහත්කාරයෙන් එකතු කරන කොටස ඉවත් කර ඇත
+            if(u && h) tags.push({u, h});
+        });
+        document.querySelectorAll('#attrs-container .row-item').forEach(row => {
+            let u = row.querySelectorAll('input')[0].value.trim();
+            let h = row.querySelectorAll('input')[1].value.trim();
+            if(u && h) attrs.push({u, h});
+        });
+        return { tags, attrs };
+    }
+    function downloadConfigFile() {
+        let data = getCurrentData();
+        if(data.tags.length === 0 && data.attrs.length === 0) {
+            showToast("බාගැනීමට දත්ත නොමැත!", "error");
+            return;
+        }
+        let blob = new Blob([JSON.stringify(data, null, 4)], { type: "application/json" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "sinhala_html_config.json";
+        link.click();
+        showToast("සැකසුම් ගොනුව සාර්ථකව බාගන්නා ලදී!", "success");
+    }
+
+    function uploadConfigFile(input) {
+        let file = input.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let data = JSON.parse(e.target.result);
+                loadSettings(data.tags, data.attrs);
+                showToast("ගොනුව සාර්ථකව පද්ධතියට ඇතුළත් විය! කරුණාකර Save බොත්තම ඔබන්න.", "success");
+            } catch (err) {
+                showToast("වැරදි ගොනුවක්! කරුණාකර නිවැරදි ගොනුවක් ලබා දෙන්න.", "error");
+            }
+            input.value = ''; 
+        };
+        reader.readAsText(file, "UTF-8");
+    }
+
+    function resetToDefaults() {
+        if(confirm("ඔබට විශ්වාසද? සියලුම සැකසුම් මුල් තත්ත්වයට පත් වේ.")) {
+            loadSettings(defaultTags, defaultAttrs);
+            showToast("මුල් සැකසුම් නැවත පිහිටුවන ලදී!", "info");
+        }
+    }
+
+    function applyToWorkspace() {
+        let data = getCurrentData();
+        if(data.tags.length === 0) {
+            showToast("කරුණාකර අවම වශයෙන් එක් ටැග් එකක් හෝ ඇතුළත් කරන්න!", "error");
+            return;
+        }
+        localStorage.setItem('proTags', JSON.stringify(data.tags));
+        localStorage.setItem('proAttrs', JSON.stringify(data.attrs));
+        showToast("✓ සැකසුම් සාර්ථකව පද්ධතියට එක්වුණා!", "success");
+    }
+
+    function showToast(message, type = "success") {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            if(toast.parentElement) toast.remove();
+        }, 3000);
+    }
+</script>
+</body>
+</html>

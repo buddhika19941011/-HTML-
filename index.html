@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <title>සිංහල HTML ස්ටූඩියෝ - ස්වාධීන සංස්කරණය</title>
+    
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f5; margin: 0; padding: 15px; max-width: 100vw; overflow-x: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h1 { color: #1a73e8; margin: 0; font-size: 20px; }
+        .nav-btn { background: #5f6368; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; margin-left:10px; }
+        .btn-run { background: #34a853; color: white; border: none; padding: 8px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; }
+        .btn-run:hover { opacity: 0.9; }
+
+        /* Workspace Grid - පිටුවෙන් පිටතට නොයන ලෙස */
+        .workspace { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; width: 100%; box-sizing: border-box; }
+        .panel { display: flex; flex-direction: column; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 0; transition: all 0.3s ease; }
+        
+        /* Full Screen පැනල් සඳහා CSS */
+        .panel.fullscreen-mode {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1000; border-radius: 0; margin: 0; padding: 20px;
+        }
+        .panel.fullscreen-mode .editor-container { height: calc(100vh - 80px); }
+
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #e2e8f0; }
+        .panel-title { font-weight: bold; color: #2b3674; font-size: 15px; }
+        .panel-actions { display: flex; gap: 8px; }
+        .btn-mini { padding: 5px 10px; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; color: white; display: flex; align-items: center; gap: 4px;}
+        .btn-copy { background: #3b82f6; }
+        .btn-down { background: #8b5cf6; }
+        .btn-max { background: #f39c12; } /* Full Screen බොත්තමේ වර්ණය */
+        .btn-mini:hover { opacity: 0.8; }
+        
+        /* Editor Container */
+        .editor-container { display: flex; width: 100%; height: 68vh; background: #1e1e1e; border-radius: 6px; overflow: hidden; border: 1px solid #3c3c3c; transition: height 0.3s; }
+        
+        /* ස්වාධීන ඉලක්කම් තීරුව */
+        .gutter { 
+            width: 48px; background: #252526; color: #858585; text-align: right; 
+            padding: 15px 10px 15px 0; font-family: 'Courier New', Courier, monospace; 
+            font-size: 15px; line-height: 1.5; user-select: none; overflow: hidden; 
+            border-right: 1px solid #3c3c3c; white-space: pre; 
+        }
+        
+        /* කේත ලියන කලාපය */
+        .textarea-wrap { position: relative; flex: 1; height: 100%; }
+        
+        .textarea-wrap textarea, 
+        .textarea-wrap pre { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            margin: 0 !important; padding: 15px !important; 
+            font-family: 'Courier New', Courier, monospace !important; 
+            font-size: 15px !important; line-height: 1.5 !important; 
+            border: none !important; overflow: auto !important; 
+            white-space: pre !important; background: transparent !important;
+            box-sizing: border-box; tab-size: 4;
+            letter-spacing: normal; word-spacing: normal;
+        }
+        
+        /* Textarea එක විනිවිද පෙනෙන ලෙස සහ Cursor එක සුදු පැහැයෙන් */
+        .textarea-wrap textarea { color: transparent !important; caret-color: #fff !important; z-index: 2; resize: none; outline: none; }
+        
+        /* අප විසින් සාදන පාට ගැන්වූ කේත පෙන්වන ස්ථානය */
+        .textarea-wrap pre { z-index: 1; pointer-events: none; color: #abb2bf; }
+        .textarea-wrap pre code { font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; padding: 0 !important; margin: 0 !important; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📝 සිංහල HTML වැඩබිම</h1>
+    <div>
+        <button class="btn-run" onclick="runOutput()">▶️ ප්‍රතිඵලය බලන්න (Run)</button>
+        <a class="nav-btn" href="settings.html">⚙️ සැකසුම් පිටුවට</a>
+        <a class="nav-btn" href="help.html">📖 උපදෙස් (Help)</a>
+    </div>
+</div>
+
+<div class="workspace">
+    <!-- වම්පස බොක්ස් එක (සිංහල කේතය) -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">📝 සිංහල කේතය (Sinhala)</span>
+            <div class="panel-actions">
+                <button class="btn-mini btn-max" onclick="toggleMaximize(this)">🔲 විශාල කරන්න</button>
+                <button class="btn-mini btn-copy" onclick="copyCode('sinhala')">📋 කොපි</button>
+                <button class="btn-mini btn-down" onclick="downloadCode('sinhala')">💾 බාගන්න</button>
+            </div>
+        </div>
+        <div class="editor-container">
+            <div id="gutterSinhala" class="gutter">1</div>
+            <div class="textarea-wrap">
+                <textarea id="editorSinhala" spellcheck="false"></textarea>
+                <pre id="sinPre"><code id="highlightSinhala"></code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- දකුණුපස බොක්ස් එක (HTML කේතය) -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">🌐 HTML කේතය (English)</span>
+            <div class="panel-actions">
+                <button class="btn-mini btn-max" onclick="toggleMaximize(this)">🔲 විශාල කරන්න</button>
+                <button class="btn-mini btn-copy" onclick="copyCode('html')">📋 කොපි</button>
+                <button class="btn-mini btn-down" onclick="downloadCode('html')">💾 බාගන්න</button>
+            </div>
+        </div>
+        <div class="editor-container">
+            <div id="gutterHtml" class="gutter">1</div>
+            <div class="textarea-wrap">
+                <textarea id="editorHtml" spellcheck="false"></textarea>
+                <pre id="htmlPre"><code id="highlightHtml"></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="converter.js"></script>
+
+<!-- Fullscreen Toggle කිරීම සඳහා අදාළ Script එක -->
+<script>
+    function toggleMaximize(btn) {
+        let panel = btn.closest('.panel');
+        panel.classList.toggle('fullscreen-mode');
+        
+        if(panel.classList.contains('fullscreen-mode')) {
+            btn.innerHTML = '🗗 කුඩා කරන්න';
+        } else {
+            btn.innerHTML = '🔲 විශාල කරන්න';
+        }
+    }
+</script>
+
+</body>
+</html>

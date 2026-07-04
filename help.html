@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>උදව් සහ උපදෙස් - සිංහල HTML</title>
+    <style>
+        :root {
+            --primary: #4361ee; --primary-hover: #3a53d0; --bg-color: #f4f7fe; 
+            --card-bg: #ffffff; --text-dark: #2b3674; --text-muted: #64748b; 
+            --border: #e2e8f0; --code-bg: #1e1e1e; --code-color: #abb2bf;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
+        .header h1 { font-size: 22px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .nav-btn { background: #5f6368; color: white; padding: 8px 15px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; transition: background 0.3s; }
+        .nav-btn:hover { background: #4b4e52; }
+
+        /* Main Layout */
+        .layout { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; background: white; border-right: 1px solid var(--border); overflow-y: auto; padding: 20px 10px; }
+        .nav-group-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 15px 0 5px 15px; letter-spacing: 1px; }
+        .nav-item { padding: 10px 15px; margin-bottom: 5px; border-radius: 8px; cursor: pointer; color: var(--text-dark); font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover { background: var(--bg-color); color: var(--primary); }
+        .nav-item.active { background: rgba(67, 97, 238, 0.1); color: var(--primary); border-left: 4px solid var(--primary); }
+
+        /* Content Area */
+        .content { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
+        .section { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        
+        /* Typography & Components within Content */
+        h2 { font-size: 28px; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; color: var(--primary); }
+        h3 { font-size: 20px; margin: 30px 0 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        p { line-height: 1.6; color: var(--text-dark); margin-bottom: 15px; font-size: 15px; }
+        
+        blockquote { background: rgba(67, 97, 238, 0.05); border-left: 4px solid var(--primary); padding: 15px 20px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-style: italic; color: #3b4256; }
+        .alert { background: #fff3cd; border-left: 4px solid #f39c12; padding: 15px; border-radius: 4px; margin: 20px 0; font-size: 14px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--primary); color: white; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        
+        code.inline { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 14px; color: #d63031; }
+        
+        /* Code Block */
+        .code-block-wrapper { position: relative; margin-bottom: 30px; }
+        .btn-copy { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .btn-copy:hover { background: rgba(255,255,255,0.4); }
+        pre { background: var(--code-bg); color: var(--code-color); padding: 20px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; overflow-x: auto; font-size: 15px; line-height: 1.5; margin: 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>📖 සිංහල HTML - උදව් සහ උපදෙස්</h1>
+        <div>
+            <a href="index.html" class="nav-btn">⬅️ ප්‍රධාන පිටුවට</a>
+            <a href="settings.html" class="nav-btn">⚙️ සැකසුම්</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- වම්පස මෙනුව (Sidebar) -->
+        <div class="sidebar">
+            <div class="nav-group-title">ආරම්භය</div>
+            <div class="nav-item active" onclick="showSection('intro', this)">👋 හැඳින්වීම</div>
+            
+            <div class="nav-group-title">මූලික ව්‍යුහය</div>
+            <div class="nav-item" onclick="showSection('struct-html', this)">🌐 වෙබ්පිටුව; ටැගය</div>
+            <div class="nav-item" onclick="showSection('struct-head', this)">🧠 ;හිස; ටැගය</div>
+            <div class="nav-item" onclick="showSection('struct-body', this)">👤 ;ශරීරය; ටැගය</div>
+
+            <div class="nav-group-title">පෙළ හැඩතල</div>
+            <div class="nav-item" onclick="showSection('text-heading', this)">🔠 මාතෘකා (Headings)</div>
+            <div class="nav-item" onclick="showSection('text-para', this)">📝 ඡේදය (Paragraph)</div>
+        </div>
+
+        <!-- ප්‍රධාන අන්තර්ගතය (Main Content) -->
+        <div class="content">
+            
+            <!-- 1. හැඳින්වීම -->
+            <div id="intro" class="section active">
+                <h2>👋 සිංහල HTML වැඩබිමට සාදරයෙන් පිළිගනිමු!</h2>
+                <p>මෙහිදී ඔබට ඉංග්‍රීසි භාෂාව වෙනුවට මව්බසින්ම වෙබ් පිටු නිර්මාණය කරගත හැක. වම්පස ඇති මෙනුවෙන් ඔබට අවශ්‍ය ටැගය තෝරාගෙන එහි ක්‍රියාකාරිත්වය සහ එය භාවිතා කරන ආකාරය ඉගෙනගන්න.</p>
+                <div class="alert">
+                    💡 <b>Pro Tip:</b> මෙහි ඇති කේත උදාහරණ වල දකුණුපස ඉහළ ඇති <b>"Copy"</b> බොත්තම එබීමෙන් ඒවා කෙලින්ම ඔබේ කේතනය කරන පිටුවට (Editor) ගෙන යා හැක.
+                </div>
+            </div>
+
+            <!-- 2. වෙබ්පිටුව. ටැගය -->
+            <div id="struct-html" class="section">
+                <h2>🌐 මූලික ව්‍යුහය</h2>
+                <h3>වෙබ්පිටුව. (ඉංග්‍රීසි: <code>&lt;html&gt;</code>)</h3>
+                
+                <blockquote>
+                    <b>කාර්යය:</b> ඕනෑම HTML ලේඛනයක (HTML document) තියෙන වැදගත්ම සහ ප්‍රධානම ටැගයයි. මෙය වෙබ් පිටුවේ <b>"මව් ටැගය" (Parent Tag)</b> ලෙස හඳුන්වයි. වෙබ් බ්‍රවුසරයකට මෙම පිටුව HTML එකක් බව හඳුනා ගැනීමට උපකාරී වන්නේ මෙම ටැගයයි.
+                </blockquote>
+
+                <h4>🛠️ ප්‍රධාන ගුණාංග (Attributes)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ගුණාංගය (සිංහල)</th>
+                            <th>Attribute (English)</th>
+                            <th>අගයන් (Values)</th>
+                            <th>විස්තරය</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">භාෂාව=</code></td>
+                            <td><code class="inline">lang=</code></td>
+                            <td>"si", "en"</td>
+                            <td>වෙබ් පිටුවේ අන්තර්ගත ප්‍රධාන භාෂාව බ්‍රවුසර් එකට හඳුන්වා දෙයි.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>📌 වැදගත් ලක්ෂණ</h4>
+                <p>ඕනෑම වෙබ් පිටුවක අන්තර්ගතය ආරම්භ විය යුත්තේ <code class="inline">වෙබ්පිටුව</code> ටැගයෙන් වන අතර එය අවසන් විය යුත්තේ <code class="inline">;/වෙබ්පිටුව;</code> ටැගයෙනි. අනෙකුත් සියලුම ටැග් ලියවෙන්නේ මේ ටැග් දෙක ඇතුළතයි.</p>
+                
+                <div class="alert">
+                    💡 <b>විශේෂ සටහන:</b> <code class="inline">භාෂාව="si"</code> ලෙස යෙදීමෙන් බ්‍රවුසරය මඟින් සිංහල අකුරු වඩාත් නිවැරදිව නිරූපණය කිරීමට (Render) සහය දක්වයි.
+                </div>
+
+                <h4>💻 සරල කේත උදාහරණය</h4>
+                <div class="code-block-wrapper">
+                    <button class="btn-copy" onclick="copyCodeBlock(this)">📋 Copy</button>
+<pre>
+
+</pre>
+                </div>
+            </div>
+
+            <!-- 3. <හිස> ටැගය -->
+            <div id="struct-head" class="section">
+                <h2>🧠 මූලික ව්‍යුහය</h2>
+                <h3>හිස (ඉංග්‍රීසි: <code>&lt;head&gt;</code>)</h3>
+                <blockquote>
+                    <b>කාර්යය:</b> වෙබ් පිටුවේ තිරය මත <b>නොපෙනෙන</b> නමුත්, පිටුවට අවශ්‍ය වැදගත් පසුබිම් තොරතුරු (Meta Data, Title, CSS links) රඳවා තබා ගන්නා කොටසයි.
+                </blockquote>
+                <p>මෙය නිතරම <code class="inline">වෙබ්පිටුව</code> ටැගය ආරම්භ වූ විගසම යෙදිය යුතුය.</p>
+                
+                <h4>💻 සරල කේත උදාහරණය</h4>
+                <div class="code-block-wrapper">
+                    <button class="btn-copy" onclick="copyCodeBlock(this)">📋 Copy</button>
+<pre><code>හිස;
+  මාතෘකාවඅපගේ පාසල/මාතෘකාව
+හිස</code></pre>
+                </div>
+            </div>
+
+            <!-- 4. <මාතෘකාව1> ටැගය -->
+            <div id="text-heading" class="section">
+                <h2>🔠 පෙළ හැඩතල</h2>
+                <h3>මාතෘකාව සිට මාතෘකාව6 දක්වා (Headings)</h3>
+                <blockquote>
+                    <b>කාර්යය:</b> වෙබ් පිටුවක ඇති ප්‍රධාන මාතෘකා සහ අනු-මාතෘකා ලිවීම සඳහා භාවිතා කරයි. 1 හි විශාලම අකුරු ද, 6 හි කුඩාම අකුරු ද නිරූපණය වේ.
+                </blockquote>
+
+                <h4>💻 සරල කේත උදාහරණය</h4>
+                <div class="code-block-wrapper">
+                    <button class="btn-copy" onclick="copyCodeBlock(this)">📋 Copy</button>
+<pre><code>මාතෘකාවමෙය ප්‍රධාන මාතෘකාවයි (h1)මාතෘකාව1;
+;මාතෘකාව2;මෙය අනු-මාතෘකාවකි (h2);/මාතෘකාව2;
+;මාතෘකාව3;මෙය කුඩා මාතෘකාවකි (h3);/මාතෘකාව3;</code></pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript ක්‍රියාකාරිත්වය -->
+    <script>
+        // මෙනුවේ ඇති අයිතම ක්ලික් කරන විට අදාළ පිටුව පෙන්වීම
+        function showSection(sectionId, element) {
+            // සියලුම sections සඟවන්න
+            document.querySelectorAll('.section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            // තේරූ section එක පමණක් පෙන්වන්න
+            document.getElementById(sectionId).classList.add('active');
+
+            // මෙනුවේ Active වර්ණය වෙනස් කිරීම
+            if(element) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+        }
+
+        // Code block එකක ඇති දෑ Copy කරගැනීමේ ශ්‍රිතය
+        function copyCodeBlock(btn) {
+            let pre = btn.nextElementSibling;
+            let codeText = pre.innerText || pre.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                let originalText = btn.innerText;
+                btn.innerText = "✅ Copied!";
+                btn.style.background = "#2ecc71";
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "rgba(255,255,255,0.2)";
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
